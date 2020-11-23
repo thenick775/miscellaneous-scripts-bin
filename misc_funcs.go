@@ -34,3 +34,22 @@ func (a mytyp) Less(i, j int) bool {
 func (a mytyp) Len() int { return len(a) }
 
 func (a mytyp) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+
+//example of removing duplicates based on date
+func removeDuplicateValues(d []mytyp) []lineData {
+	keys := make(map[string]bool)
+	list := []lineData{}
+
+	//If the key(values of the slice) is not equal
+	//to the already present value in new slice (list)
+	//then we append it, else we move to the next element
+	for _, entry := range d {
+		if _, value := keys[entry.date]; !value {
+			keys[entry.date] = true
+			list = append(list, entry)
+		} else {
+			fmt.Println("found duplicate\n", entry)
+		}
+	}
+	return list
+}
