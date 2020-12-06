@@ -1,4 +1,30 @@
 //computes closure of specified attribute given a set of functional dependencies
+//sample output:
+//Deps:  S->D, I->B, IS->Q, B->O
+//Attribute to find closure for, X:  SI
+//from X,
+//SI
+//apply transitivity:
+//Pass:  0
+//0 [S D]
+//adding val: D
+//SID
+//1 [I B]
+//adding val: B
+//SIDB
+//2 [IS Q]
+//adding val: Q
+//SIDBQ
+//3 [B O]
+//adding val: O
+//SIDBQO
+//Pass:  1
+//0 [S D]
+//1 [I B]
+//2 [IS Q]
+//3 [B O]
+//Final Attribute Closure: (SI)+ = SIDBQO
+
 package main
 
 import (
