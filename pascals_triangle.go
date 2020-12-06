@@ -3,35 +3,36 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"math/big"
 )
 
 func fixedLengthString(length int, str string) string {
 	return fmt.Sprintf(fmt.Sprintf("%%%d.%ds", length, length), str)
 }
 
-func fact(n int64) int64 {
-	res := int64(1)
-	if n > 0 {
-		for i := int64(1); i <= n; i++ {
-			res *= i
+func fact(n *big.Int) *big.Int {
+	res, t := big.NewInt(1), big.NewInt(0) //int64(1)
+	if n.Cmp(t) == 1 {
+		for i := big.NewInt(1); i.Cmp(new(big.Int).Add(big.NewInt(1), n)) == -1; i.Add(big.NewInt(1), i) {
+			res.Mul(i, res)
 		}
 	}
 	return res
 }
 
-func binom(n int64, k int64) int64 {
-	return fact(n) / (fact(k) * fact(n-k))
+func binom(n *big.Int, k *big.Int) *big.Int /*int64*/ {
+	t := new(big.Int).Mul(fact(k), fact(big.NewInt(0).Sub(n, k)))
+	return new(big.Int).Div(fact(n), t)
 }
 
-func pascalsTriangle(depth int64) {
-	res, leadspcnt := "", depth
-	for i := int64(0); i < depth; i++ {
-		for j := int64(0); j < i+1; j++ {
-			if j == 0 {
+func pascalsTriangle(depth *big.Int) {
+	res, leadspcnt := "", depth.Int64()
+	for i := big.NewInt(0); i.Cmp(depth) == -1; i.Add(big.NewInt(1), i) {
+		for j := big.NewInt(0); j.Cmp(big.NewInt(0).Add(big.NewInt(1), i)) == -1; j.Add(big.NewInt(1), j) {
+			if j.Cmp(big.NewInt(0)) == 0 {
 				res += fixedLengthString(int(leadspcnt+4), "")
 			}
-			res += fixedLengthString(2, strconv.FormatInt(binom(i, j), 10)) + " "
+			res += binom(i, j).String() + " "
 		}
 		leadspcnt -= 1
 		res += "\n"
@@ -40,5 +41,5 @@ func pascalsTriangle(depth int64) {
 }
 
 func main() {
-	pascalsTriangle(12)
+	pascalsTriangle(big.NewInt(12))
 }
