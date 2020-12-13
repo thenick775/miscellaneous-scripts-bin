@@ -151,7 +151,6 @@ func to3NF(deps [][]string) {
 	splitdeps := splitDeps(deps)
 	fmt.Println(splitdeps)
 
-	//deps_non_redundant := [][]string{}
 	//redundancy check, step 2
 	for i := 0; i < len(splitdeps); i++ {
 		lhs, rhs := splitdeps[i][0], splitdeps[i][1]
@@ -163,8 +162,6 @@ func to3NF(deps [][]string) {
 		//fmt.Println("splitdeps: ", splitdeps)
 
 		if strings.Contains(theclosure, rhs) {
-			//am not redundant
-			//deps_non_redundant = append(deps_non_redundant, dep)
 			//fmt.Println("is redundant")
 			splitdeps = append(splitdeps[:i], splitdeps[i+1:]...)
 			i--
@@ -223,7 +220,8 @@ func to3NF(deps [][]string) {
 }
 
 func main() {
-	//attributes:="ABCDEI"
+	//attributes:="ABCDEI" //for 1
+	//attributes:="FDPN" //for 2
 	deps := [][][]string{
 		[][]string{{"A", "C"},
 			{"AB", "C"},
