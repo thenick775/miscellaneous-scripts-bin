@@ -12,7 +12,6 @@
 //R3(CDI)
 //R4(AC)
 //
-//
 //**Problem:  2 **
 //[[FD P] [FD N] [P N] [N P]]
 //non redundant deps:  [[FD N] [P N] [N P]]
@@ -23,6 +22,17 @@
 //Relations:
 //R1(NP)
 //R2(FDN)
+//
+//**Problem:  3 **
+//[[ABC D] [ABC E] [ABC G] [E B] [E C] [E G] [F A] [F H]]
+//non redundant deps:  [[ABC D] [ABC E] [E B] [E C] [E G] [F A] [F H]]
+//f (non-redundant lhs):  [[ABC D] [ABC E] [E B] [E C] [E G] [F A] [F H]]
+//synthesized: [[ABC DE] [E BCG] [F AH]]
+//
+//Relations:
+//R1(FAH)
+//R2(EBCG)
+//R3(ABCDE)
 
 package main
 
@@ -53,12 +63,21 @@ func SortString(s string) string {
 	return string(r)
 }
 
+func in(idx int, list []int) bool {
+	for i, _ := range list {
+		if i == idx {
+			return true
+		}
+	}
+	return false
+}
+
 func printTables(deps [][]string) {
 	depsloc := make([][]string, len(deps))
 	copy(depsloc, deps)
 	res, count, alreadyhere := "", 1, false
-
-	for i := len(depsloc) - 1; i >= 0; i-- {
+	
+	for i := len(depsloc) - 1; i >= 0; i-- { //check for duplicate tables
 		dep := strings.Join(depsloc[i], "")
 		for j := len(depsloc) - 1; j >= 0; j-- {
 			innerdep := strings.Join(depsloc[j], "")
@@ -79,12 +98,6 @@ func printTables(deps [][]string) {
 		alreadyhere = false
 	}
 	fmt.Println("\nRelations:\n" + res)
-
-	/*res = ""
-	for i, dep := range deps {
-		res += "R" + strconv.Itoa(i+1) + "(" + strings.Join(dep, "") + ")\n"
-	}
-	fmt.Print(res)*/
 }
 
 func remove(s [][]string, i int) [][]string {
@@ -137,9 +150,7 @@ func closure(x string, deps [][]string) string {
 						res += string(val)
 					}
 				}
-
 			}
-
 		}
 		count++
 	}
@@ -155,12 +166,6 @@ func to3NF(deps [][]string) {
 	for i := 0; i < len(splitdeps); i++ {
 		lhs, rhs := splitdeps[i][0], splitdeps[i][1]
 		theclosure := closure(lhs, remove(splitdeps, i))
-
-		//fmt.Println("dep:", splitdeps[i])
-		//fmt.Println("closure: ", theclosure)
-		//fmt.Print("rhs: ", rhs, "\n\n")
-		//fmt.Println("splitdeps: ", splitdeps)
-
 		if strings.Contains(theclosure, rhs) {
 			//fmt.Println("is redundant")
 			splitdeps = append(splitdeps[:i], splitdeps[i+1:]...)
@@ -175,10 +180,6 @@ func to3NF(deps [][]string) {
 		if len(lhs) > 1 {
 			for _, val := range lhs {
 				theclosure := closure(string(val), remove(splitdeps, i))
-
-				//fmt.Println("dep2:", dep)
-				//fmt.Println("closure2: ", theclosure)
-
 				for _, valc := range strings.ReplaceAll(lhs, string(val), "") {
 					if strings.Contains(theclosure, string(valc)) {
 						//fmt.Println(valc, " is redundant round 2")
@@ -193,22 +194,22 @@ func to3NF(deps [][]string) {
 
 	//3nf synthesization
 	res := [][]string{}
-	checked := ""
+	checked := make(map[string][]int)
 	for i, val := range splitdeps {
 		tmp := []string{}
-		if !strings.Contains(checked, val[0]) {
-			checked += val[0]
-			//fmt.Println("checked: ", checked)
-			//fmt.Println("val: ", val)
+		if _, ok := checked[val[0]]; !ok {
 			for j, vali := range splitdeps {
-				if val[0] == vali[0] && i != j {
-					tmp = []string{val[0], val[1] + vali[1]}
+				if val[0] == vali[0] && i != j && !in(j, checked[val[0]]) {
+					checked[val[0]] = append(checked[val[0]], j)
+
+					if len(tmp) >= 2 {
+						tmp = []string{val[0], tmp[1] + vali[1]}
+					} else {
+						tmp = []string{val[0], val[1] + vali[1]}
+					}
 				}
 			}
-
-			//fmt.Println("tmp: ", tmp)
 			if len(tmp) == 0 {
-				//fmt.Println("is nil")
 				res = append(res, val)
 			} else {
 				res = append(res, tmp)
@@ -222,6 +223,7 @@ func to3NF(deps [][]string) {
 func main() {
 	//attributes:="ABCDEI" //for 1
 	//attributes:="FDPN" //for 2
+	//attributes:="ABCDEFGH' //for 3
 	deps := [][][]string{
 		[][]string{{"A", "C"},
 			{"AB", "C"},
@@ -232,12 +234,15 @@ func main() {
 		[][]string{{"FD", "PN"},
 			{"P", "N"},
 			{"N", "P"}},
+		[][]string{{"ABC", "DEG"},
+			{"E", "BCG"},
+			{"F", "AH"},
+		},
 	}
 
 	for i, dep := range deps {
 		fmt.Println("**Problem: ", i+1, "**")
 		to3NF(dep)
-		fmt.Println("")
 	}
 
 }
