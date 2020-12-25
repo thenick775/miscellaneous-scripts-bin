@@ -32,7 +32,7 @@
 // | 9 7 5 | 6 1 3 | 8 2 4 |
 // | 2 4 6 | 8 5 7 | 1 9 3 |
 // +-------+-------+-------+
-// Solved in:82.191853ms
+// Solved in:1.585154ms
 
 // ********
 // Problem 2
@@ -65,7 +65,7 @@
 // | 4 5 6 | 1 9 8 | 3 7 2 |
 // | 2 3 8 | 6 4 7 | 1 9 5 |
 // +-------+-------+-------+
-// Solved in:1.748625685s
+// Solved in:30.323303ms
 
 // ********
 // Problem 3
@@ -98,7 +98,7 @@
 // | 4 3 8 | 5 2 6 | 9 1 7 |
 // | 7 9 6 | 3 1 8 | 4 5 2 |
 // +-------+-------+-------+
-// Solved in:1m5.835276129s
+// Solved in:1.130869143s
 
 package main
 
@@ -113,6 +113,9 @@ import (
 type board struct {
 	Board      [9][9]int
 	EmptyCount int
+	CheckRow   [9]map[int]struct{}
+	CheckCol   [9]map[int]struct{}
+	Check3x3   [9]map[int]struct{}
 }
 
 func printBoard(b board) {
@@ -135,49 +138,49 @@ func printBoard(b board) {
 }
 
 func checkValid(b board) bool {
-	checkmap, valid := make(map[int]struct{}), true
-	for i := 0; i < 9 && valid; i++ { //check rows
-		for j := 0; j < 9 && valid; j++ {
+	checkmap := make(map[int]struct{})
+	for i := 0; i < 9; i++ { //check rows
+		for j := 0; j < 9; j++ {
 			if _, ok := checkmap[b.Board[i][j]]; !ok && b.Board[i][j] != 0 {
 				checkmap[b.Board[i][j]] = struct{}{}
 			} else if b.Board[i][j] != 0 {
 				//fmt.Println("duped row:", b.Board[i][j], " i: ", i, " j: ", j)
-				valid = false
+				return false
 			}
 		}
 		checkmap = make(map[int]struct{})
 	}
 	checkmap = make(map[int]struct{})
-	for i := 0; i < 9 && valid; i++ { //check columns
-		for j := 0; j < 9 && valid; j++ {
+	for i := 0; i < 9; i++ { //check columns
+		for j := 0; j < 9; j++ {
 			if _, ok := checkmap[b.Board[j][i]]; !ok && b.Board[j][i] != 0 {
 				checkmap[b.Board[j][i]] = struct{}{}
 			} else if b.Board[j][i] != 0 {
 				//fmt.Println("duped col:", b.Board[j][i], " i: ", i, " j: ", j)
-				valid = false
+				return false
 			}
 		}
 		checkmap = make(map[int]struct{})
 	}
 	checkmap = make(map[int]struct{})
 	//check 3x3
-	for i := 0; i < 9 && valid; i += 3 { //check columns
-		for j := 0; j < 9 && valid; j += 3 {
-			for k := i; k < i+3 && valid; k++ {
-				for l := j; l < j+3 && valid; l++ {
+	for i := 0; i < 9; i += 3 { //check 3x3
+		for j := 0; j < 9; j += 3 {
+			for k := i; k < i+3; k++ {
+				for l := j; l < j+3; l++ {
 					if _, ok := checkmap[b.Board[k][l]]; !ok && b.Board[k][l] != 0 {
 						checkmap[b.Board[k][l]] = struct{}{}
 					} else if b.Board[k][l] != 0 {
 						//fmt.Println(checkmap)
 						//fmt.Println("duped 3x3:", b.Board[k][l], " k: ", k, " l: ", l)
-						valid = false
+						return false
 					}
 				}
 			}
 			checkmap = make(map[int]struct{})
 		}
 	}
-	return valid
+	return true //valid
 }
 
 func timeWrapper(b board, algostr string, f func(b *board) bool) {
@@ -199,18 +202,17 @@ func depthFirst(b *board) bool {
 		for j := 0; j < 9; j++ {
 			if b.Board[i][j] == 0 { //this is a space not yet filled
 				for k := 9; k >= 1; k-- {
-					//fmt.Println(i, j)
-					b.Board[i][j] = k
-					b.EmptyCount -= 1
-					if checkValid(*b) {
+					if b.IsMoveValid(k, i, j) {
+						b.Board[i][j] = k
+						b.EmptyCount -= 1
 						if depthFirst(b) {
 							return true
 						}
 						b.Board[i][j] = 0
 						b.EmptyCount += 1
-					} else {
-						b.Board[i][j] = 0
-						b.EmptyCount += 1
+						delete(b.CheckRow[i], k)
+						delete(b.CheckCol[j], k)
+						delete(b.Check3x3[CountFor3x3(i, j)], k)
 					}
 				}
 				return false
@@ -219,6 +221,103 @@ func depthFirst(b *board) bool {
 	}
 
 	return false
+}
+
+func (b *board) Init() bool {
+	if checkValid(*b) {
+		for i := 0; i < 9; i++ { //init row
+			b.CheckRow[i] = make(map[int]struct{})
+			for j := 0; j < 9; j++ {
+				if b.Board[i][j] != 0 {
+					b.CheckRow[i][b.Board[i][j]] = struct{}{}
+				}
+			}
+		}
+
+		for i := 0; i < 9; i++ { //init col
+			for j := 0; j < 9; j++ {
+				if b.CheckCol[i] == nil {
+					b.CheckCol[i] = make(map[int]struct{})
+				}
+				if b.Board[j][i] != 0 {
+					b.CheckCol[i][b.Board[j][i]] = struct{}{}
+				}
+			}
+		}
+
+		for i := 0; i < 9; i += 3 { //check 3x3
+			for j := 0; j < 9; j += 3 {
+				if b.Check3x3[CountFor3x3(i, j)] == nil {
+					b.Check3x3[CountFor3x3(i, j)] = make(map[int]struct{})
+				}
+				for k := i; k < i+3; k++ {
+					for l := j; l < j+3; l++ {
+						if b.Board[k][l] != 0 {
+							b.Check3x3[CountFor3x3(i, j)][b.Board[k][l]] = struct{}{}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		return false
+	}
+	return true
+}
+
+func CountFor3x3(i int, j int) int {
+	if i < 3 && j < 3 {
+		return 0
+	} else if i < 3 && j >= 3 && j < 6 {
+		return 1
+	} else if i < 3 && j >= 6 {
+		return 2
+	} else if i >= 3 && i < 6 && j < 3 {
+		return 3
+	} else if i >= 3 && i < 6 && j >= 3 && j < 6 {
+		return 4
+	} else if i >= 3 && i < 6 && j >= 6 {
+		return 5
+	} else if i >= 6 && j < 3 {
+		return 6
+	} else if i >= 6 && j >= 3 && j < 6 {
+		return 7
+	} else if i >= 6 && j >= 6 {
+		return 8
+	}
+	return -1
+}
+
+func (b *board) IsMoveValid(val int, i int, j int) bool {
+	added := false
+	if _, ok := b.CheckRow[i][val]; !ok {
+		b.CheckRow[i][val] = struct{}{}
+		added = true
+	} else {
+		return false
+	}
+
+	if _, ok := b.CheckCol[j][val]; !ok {
+		b.CheckCol[j][val] = struct{}{}
+		added = true
+	} else {
+		if added {
+			delete(b.CheckRow[i], val)
+		}
+		return false
+	}
+
+	if _, ok := b.Check3x3[CountFor3x3(i, j)][val]; !ok {
+		b.Check3x3[CountFor3x3(i, j)][val] = struct{}{}
+		added = true
+	} else {
+		if added {
+			delete(b.CheckRow[i], val)
+			delete(b.CheckCol[j], val)
+		}
+		return false
+	}
+	return true
 }
 
 func parseinput(input string) board {
@@ -277,13 +376,13 @@ func main() {
 	for i, inputstr := range input {
 		fmt.Println("********\nProblem", i+1)
 		b := parseinput(inputstr)
-		if checkValid(b) {
+		if b.Init() {
 			fmt.Println("Initial Board:")
 			printBoard(b)
+			timeWrapper(b, "Depth First Search", depthFirst)
 		} else {
 			fmt.Println("illegal board")
 			printBoard(b)
 		}
-		timeWrapper(b, "Depth First Search", depthFirst)
 	}
 }
