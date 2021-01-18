@@ -28,3 +28,5 @@ Usage:
 
 ![](graphics/mandel_zoomed.png)
 
+![](graphics/mandel_low_thresh.png)
+
