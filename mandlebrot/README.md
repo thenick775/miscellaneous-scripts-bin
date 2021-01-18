@@ -1,12 +1,8 @@
 ## Mandelbrot Set Plotting Utility
 
-
-![](graphics/mandel_default.png)
-
-![](graphics/mandel_zoomed.png)
-
 This quick utility plots the Mandelbrot set concurrently, allowing for customizable zoom, positioning, anti aliasing, and image size.
 
+```
 Usage:
   -AA int
     	anti alias (scaling of width/height) (default 4)
@@ -26,4 +22,9 @@ Usage:
     	user coordinate y center position
   -w int
     	width of image (default 1080)
+```
+
+![](graphics/mandel_default.png)
+
+![](graphics/mandel_zoomed.png)
 
