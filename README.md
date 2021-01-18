@@ -1,4 +1,4 @@
-## Standalone Programs
+## Standalone Programs (Compatible with Go Playground)
  Try them live!
  - [3NF Schema From Functional Dependencies](https://play.golang.org/p/vMlOusFA4hE)
  - [Database Attribute Closure](https://play.golang.org/p/HFge6jSsRP4)
