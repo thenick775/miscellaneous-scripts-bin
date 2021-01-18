@@ -54,7 +54,7 @@ func main() {
 
 	widthr, heightr := widtho*antialias, heighto*antialias //anti aliasing, resized at end back to orginal
 	ratio := float64(heightr) / float64(widthr)
-	radius := urad * ratio
+	radius := urad
 	yrad := float64(radius * ratio)
 
 	xstart, xend := currxuser-radius/2.0, currxuser+radius/2.0
