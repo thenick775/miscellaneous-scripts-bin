@@ -30,3 +30,5 @@ Usage:
 
 ![](graphics/mandel_low_thresh.png)
 
+![](graphics/mandle_extra_zoom.png)
+
