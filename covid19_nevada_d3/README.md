@@ -6,9 +6,7 @@ This was a simple and quick exercise utilizing D3 v3 to view continuously updati
 
 Data and counts are displayed using linear interpolation between actual data points.
 
-Try it live!
-
-[Link](https://raw.githack.com/thenick775/miscellaneous-scripts-bin/master/covid19_nevada_d3/nevada-covid-19.html)
+[Try it live!](https://raw.githack.com/thenick775/miscellaneous-scripts-bin/master/covid19_nevada_d3/nevada-covid-19.html)
 
 Data Source: The New York Times
 
