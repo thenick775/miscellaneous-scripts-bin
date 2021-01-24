@@ -125,6 +125,13 @@ svg.append("text")
     .style("text-decoration", "underline")
     .text("Nevada Covid-19 Cases vs. Deaths");
 
+svg.append("text")
+    .attr("x", (width / 2)+25)
+    .attr("y", height+80)
+    .attr("text-anchor", "middle")
+    .style("font-size", "10px")
+    .text("Data Provided by N.Y Times");
+
 d3.csv(datasource, function(error, data) {
 
     data.forEach(function(d) {
