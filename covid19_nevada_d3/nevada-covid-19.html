@@ -494,7 +494,7 @@ function GenerateTable(){
               $('#rawdatatable').DataTable({
                 paging:false,
                 columns: [
-                    { data: 'date', render: function ( d, type, row ) {console.log(d,type,row);return moment(d).format("YYYY-MM-DD");} },
+                    { data: 'date', render: function ( d, type, row ) {return moment(d).format("YYYY-MM-DD");} },
                     { data: 'state' },
                     { data: 'fips' },
                     { data: 'cases' },
