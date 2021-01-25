@@ -35,6 +35,10 @@ text {
     fill : white;
 }
 
+table{
+    display:none;
+}
+
 </style>
 <body>
 <script src="https://d3js.org/d3.v3.js"></script>
@@ -131,6 +135,8 @@ svg.append("text")
     .attr("text-anchor", "middle")
     .style("font-size", "10px")
     .text("Data Provided by N.Y Times");
+
+var table = null
 
 d3.csv(datasource, function(error, data) {
 
@@ -271,17 +277,9 @@ d3.csv(datasource, function(error, data) {
 
     console.log(totalLength)
 
-    d3.select(path[0][0])
+    d3.selectAll('.line')
         .attr("stroke-dasharray", totalLength[0] + " " + totalLength[0])
         .attr("stroke-dashoffset", totalLength[0])
-        .transition()
-        .duration(2500)
-        .ease("linear")
-        .attr("stroke-dashoffset", 0);
-
-    d3.select(path[0][1])
-        .attr("stroke-dasharray", totalLength[1] + " " + totalLength[1])
-        .attr("stroke-dashoffset", totalLength[1])
         .transition()
         .duration(2500)
         .ease("linear")
@@ -415,7 +413,106 @@ d3.csv(datasource, function(error, data) {
             return d.name;
         });
 
+    //svg button for full data
+    svg.append('rect')
+       .attr('id','fulldatrect')
+       .attr('fill','white')
+       .attr('x','630')
+       .attr('y','65')
+       .attr("width",'90px')
+       .attr("height","30px")
+       .on("mousedown", function(data){d3.select('#fulldatrect').attr('fill','darkgray');} )
+       .on("mouseup", function(data){d3.select('#fulldatrect').attr('fill','white');} );
+    svg.append("text")
+       .attr('x','633')
+       .attr('y','83')
+       .style("fill",'black')
+       .style("font-size","12")
+       .text("View Raw Data")
+       .attr('color','black')
+       .on("mousedown", function(data){d3.select('#fulldatrect').attr('fill','darkgray');GenerateTable();} )
+       .on("mouseup", function(data){d3.select('#fulldatrect').attr('fill','white');} );
+
+    function tabulate(data, columns) {
+        var table = d3.select("body").append("table")
+            .attr("id","rawdatatable")
+            .attr("style", "margin-left: 250px"),
+            thead = table.append("thead"),
+            tbody = table.append("tbody");
+
+            thead.attr("padding-right:20px;")
+        // append the header row
+        thead.append("tr")
+            .selectAll("th")
+            .data(columns)
+            .enter()
+            .append("th")
+                .text(function(column) { return column; });
+
+        // create a row for each object in the data
+        var rows = tbody.selectAll("tr")
+            .data(data)
+            .enter()
+            .append("tr");
+
+        // create a cell in each row for each column
+        var cells = rows.selectAll("td")
+            .data(function(row) {
+                return columns.map(function(column) {
+                    return {column: column, value: row[column]};
+                });
+            })
+            .enter()
+            .append("td")
+            .attr("style", "font-family: Courier")
+                .html(function(d) { return d.value; });
+        
+        return table;
+    }
+
+    table = tabulate(data, ["date", "state", "fips", "cases", "deaths"]);
+
 });
+
+function GenerateTable(){
+    var featureTable = document.getElementById("rawdatatable");
+    var tablePopup = window.open("", "", "width=1080,height=780,resizeable,scrollbars");
+        tablePopup.document.write('<!DOCTYPE html>');
+        /*<!--*/
+        str=`<html>
+            <head>
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"><\/script>
+            <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"><\/link>
+            <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"><\/script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"><\/script>
+
+            <\/head>
+            <body><\/body>
+            <\/html>`
+
+        str2=`<script>
+              $('#rawdatatable').DataTable({
+                paging:false,
+                columns: [
+                    { data: 'date', render: function ( d, type, row ) {console.log(d,type,row);return moment(d).format("YYYY-MM-DD");} },
+                    { data: 'state' },
+                    { data: 'fips' },
+                    { data: 'cases' },
+                    { data: 'deaths' },
+                ]
+                });
+              $("#rawdatatable").width("90vw").height("100vh").css('margin','0px');
+              $('#rawdatatable_filter').css('float','left');
+              $('#rawdatatable').css('display','show')
+              <\/script>`
+        /*-->*/
+        tablePopup.document.write(str);
+        tablePopup.document.write(featureTable.outerHTML);
+        tablePopup.document.write(str2)
+        tablePopup.document.close();  
+}
+
+
 </script>
 
 </body>
