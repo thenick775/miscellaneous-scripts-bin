@@ -1,5 +1,5 @@
 ## Browser Compatible Programs
- - [Nevada Covid-19 Cases Interactive Graph](https://raw.githack.com/thenick775/miscellaneous-scripts-bin/master/covid19_nevada_d3/nevada-covid-19.html)
+ - [Nevada Covid-19 Cases Interactive Graph](https://rawcdn.githack.com/thenick775/miscellaneous-scripts-bin/4d994c91687c2587e789e9af5e7acdc8bb1f40ab/covid19_nevada_d3/nevada-covid-19.html)
 
 ## Standalone Programs (Compatible with Go Playground)
  Try them live!
