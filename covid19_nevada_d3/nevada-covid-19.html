@@ -21,7 +21,11 @@ body {
   stroke:white;
 }
 
-.y.axis line{
+.y.axisl line{
+  stroke:white;
+}
+
+.y.axisr line{
   stroke:white;
 }
 
@@ -81,7 +85,7 @@ var yAxisl = d3.svg.axis()
         return d;
     })
     .ticks(5)
-    .innerTickSize(15)
+    .innerTickSize(10)
     .outerTickSize(0)
     .orient("left");
 
@@ -91,7 +95,7 @@ var yAxisr = d3.svg.axis()
         return d;
     })
     .ticks(5)
-    .innerTickSize(15)
+    .innerTickSize(10)
     .outerTickSize(0)
     .orient("right");
 
@@ -119,6 +123,7 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
     .attr("display", "block")
     .attr("style", "margin:0 auto;")
+    .style("overflow","visible")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -136,7 +141,9 @@ svg.append("text")
     .attr("y", height + 80)
     .attr("text-anchor", "middle")
     .style("font-size", "12px")
-    .text("Data Provided by N.Y Times");
+    .style('cursor', 'pointer')
+    .text("Data Provided by N.Y Times")
+    .on("click",function(){window.open("https://github.com/nytimes/covid-19-data", "", "width=1080,height=780,resizeable,scrollbars");})
 
 var table = null
 
@@ -378,10 +385,10 @@ d3.csv(datasource, function(error, data) {
                     }
                     if (i == 0) {
                         d3.select(this).select('text')
-                            .text(moment(xDate).format('MMM DD YYYY') + " Cases: " + y0.invert(pos.y).toFixed(0));
+                            .text(moment(xDate).format('MMM DD YYYY') + " Cases: " + y0.invert(pos.y).toFixed(0)).style('text-anchor',"end").attr("x","-25");
                     } else {
                         d3.select(this).select('text')
-                            .text(moment(xDate).format('MMM DD YYYY') + " Deaths: " + y1.invert(pos.y).toFixed(0));
+                            .text(moment(xDate).format('MMM DD YYYY') + " Deaths: " + y1.invert(pos.y).toFixed(0)).style('text-anchor',"end").attr("x","-25");
                     }
 
                     return "translate(" + mouse[0] + "," + pos.y + ")";
@@ -426,6 +433,7 @@ d3.csv(datasource, function(error, data) {
         .attr('y', '65')
         .attr("width", '90px')
         .attr("height", "30px")
+        .style('cursor', 'pointer')
         .on("mousedown", function(data) {
             d3.select('#fulldatrect').attr('fill', 'darkgray');
         })
@@ -442,6 +450,7 @@ d3.csv(datasource, function(error, data) {
         .style("font-size", "12")
         .text("View Raw Data")
         .attr('color', 'black')
+        .style('cursor', 'pointer')
         .on("mousedown", function(data) {
             d3.select('#fulldatrect').attr('fill', 'darkgray');
             GenerateTable();
@@ -458,6 +467,7 @@ d3.csv(datasource, function(error, data) {
         .attr('y', '115')
         .attr("width", '90px')
         .attr("height", "30px")
+        .style('cursor', 'pointer')
         .on("mousedown", function(data) {
             d3.select('#fulldatrect2').attr('fill', 'darkgray');
         })
@@ -472,6 +482,7 @@ d3.csv(datasource, function(error, data) {
         .attr('y', '133')
         .style("fill", 'black')
         .style("font-size", "12")
+        .style('cursor', 'pointer')
         .text("Toggle Scaling")
         .attr('color', 'black')
         .on("mousedown", function(data) {
