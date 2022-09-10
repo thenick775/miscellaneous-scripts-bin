@@ -32,8 +32,10 @@ Codes (<list or single>)
 <repeat above layout>
 ```
 
-Note that code template is optional for debuggign purposes.
+Note that code template is optional for debugging purposes.
+
 Note the dashes are the delimiter between global cheat blocks.
+
 Note the last cheat block should not have a delimiter.
 
 See complete examples below:
