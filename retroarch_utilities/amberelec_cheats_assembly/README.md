@@ -8,6 +8,7 @@ cheats = 1290
 cheat893_desc = "wild pokemon modifier 2.0.3.2: MUNCHLAX"
 cheat893_code = "000014D1+000A+8202404C+01F3"
 cheat893_enable = false
+...
 ```
 
 You will want to place this folder into the default directory listed in your retroarch settings menu, or set a custom directory.
@@ -21,6 +22,8 @@ This accepts an input file of the following format:
 <cheats global description ex. wild pokemon modifier>
 
 code template - <ex. 82025804 YYYY>
+
+#ex. comments require a # at the beginning of the line and can be placed on any line
 
 Codes (<list or single>)
 <your codes list or a single code>
@@ -51,6 +54,7 @@ unlimited healing items
 code template - 82025804 YYYY
 
 Codes (list)
+#tested and functional
 82025804 000D - Potion
 82025804 000E - Antidote
 82025804 000F - Burn Heal
