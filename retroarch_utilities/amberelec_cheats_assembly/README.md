@@ -1,7 +1,7 @@
 ## Details
 
 ### Output
-This program outputs a cheat file of the format accepted by retroarch, specifically that of amberelec:
+This program outputs a cheat file of the format accepted by retroarch, specifically when running amberelec:
 ```
 cheats = 1290
 ...
