@@ -31,6 +31,8 @@ Codes (<list or single>)
 ...
 <repeat above layout>
 ```
+This was done so that most pokemon cheat input could be (for the most part) copy and pasted.
+
 
 Note that code template is optional for debugging purposes.
 
